@@ -32,6 +32,13 @@
 	},
 	"compatibility_flags": [
 		"nodejs_compat"
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "feedback-db",
+			"database_id": "3db2eb8f-fb58-4e40-9370-fc75d658c0a4"
+		}
 	]
 	/**
 	 * Smart Placement
