@@ -3,18 +3,50 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Hello, World!</title>
-		<p>This page comes from a static asset stored at `public/index.html` as configured in `wrangler.jsonc`.</p>
+		<title>Feedback Intelligence</title>
 	</head>
 	<body>
-		<h1 id="heading"></h1>
+		<h1>Feedback Intelligence</h1>
+		<p id="status">Loading...</p>
+		<table border="1" cellpadding="6" id="table" style="display:none; border-collapse:collapse;">
+			<thead>
+				<tr>
+					<th>Score</th>
+					<th>Text</th>
+					<th>Theme</th>
+					<th>Sentiment</th>
+					<th>Urgency</th>
+					<th>Source</th>
+				</tr>
+			</thead>
+			<tbody id="tbody"></tbody>
+		</table>
 		<script>
-			fetch('/message')
-				.then((resp) => resp.text())
-				.then((text) => {
-					const h1 = document.getElementById('heading');
-					h1.textContent = text;
+			fetch('/summary')
+				.then((r) => r.json())
+				.then((data) => {
+					document.getElementById('status').textContent = data.length + ' items';
+					document.getElementById('table').style.display = '';
+					document.getElementById('tbody').innerHTML = data.map((d) =>
+						`<tr>
+							<td><b>${d.importance}</b></td>
+							<td>${esc(d.text)}${d.summary ? '<br><small>' + esc(d.summary) + '</small>' : ''}</td>
+							<td>${esc(d.theme || '-')}</td>
+							<td>${esc(d.sentiment || '-')}</td>
+							<td>${esc(d.urgency || '-')}</td>
+							<td>${esc(d.source)}</td>
+						</tr>`
+					).join('');
+				})
+				.catch((e) => {
+					document.getElementById('status').textContent = 'Error: ' + e.message;
 				});
+
+			function esc(s) {
+				const d = document.createElement('div');
+				d.textContent = s;
+				return d.innerHTML;
+			}
 		</script>
 	</body>
 </html>
