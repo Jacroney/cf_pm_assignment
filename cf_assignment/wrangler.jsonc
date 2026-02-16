@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "still-frost-bc3e",
+	"name": "cf-assignment",
 	"main": "src/index.js",
 	"compatibility_date": "2026-02-10",
 	"assets": {

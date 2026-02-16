@@ -4,48 +4,490 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Feedback Intelligence</title>
+		<style>
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+				background: #f4f5f7;
+				color: #1a1a1a;
+				line-height: 1.5;
+			}
+			.accent-bar {
+				height: 4px;
+				background: #f6821f;
+			}
+			header {
+				background: #fff;
+				padding: 1.5rem 1rem;
+				text-align: center;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+			}
+			header h1 {
+				font-size: 1.5rem;
+				font-weight: 700;
+			}
+			header p {
+				color: #666;
+				font-size: 0.9rem;
+				margin-top: 0.25rem;
+			}
+			.container {
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 1.5rem 1rem;
+				display: flex;
+				flex-direction: column;
+				gap: 1.5rem;
+			}
+			.card {
+				background: #fff;
+				border-radius: 8px;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+				padding: 1.25rem;
+			}
+			.card h2 {
+				font-size: 1.1rem;
+				margin-bottom: 0.75rem;
+			}
+			.chips {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+				margin-bottom: 0.75rem;
+			}
+			.chip {
+				background: #fff3e6;
+				border: 1px solid #f6821f;
+				color: #c4600e;
+				border-radius: 999px;
+				padding: 0.3rem 0.75rem;
+				font-size: 0.8rem;
+				cursor: pointer;
+				transition: background 0.15s;
+			}
+			.chip:hover {
+				background: #f6821f;
+				color: #fff;
+			}
+			textarea {
+				width: 100%;
+				min-height: 80px;
+				border: 1px solid #ddd;
+				border-radius: 6px;
+				padding: 0.75rem;
+				font-family: inherit;
+				font-size: 0.9rem;
+				resize: vertical;
+			}
+			textarea:focus {
+				outline: none;
+				border-color: #f6821f;
+				box-shadow: 0 0 0 2px rgba(246, 130, 31, 0.2);
+			}
+			.row {
+				display: flex;
+				gap: 0.75rem;
+				margin-top: 0.75rem;
+				align-items: center;
+			}
+			select {
+				padding: 0.5rem;
+				border: 1px solid #ddd;
+				border-radius: 6px;
+				font-size: 0.9rem;
+				background: #fff;
+			}
+			button {
+				padding: 0.5rem 1.25rem;
+				border: none;
+				border-radius: 6px;
+				font-size: 0.9rem;
+				cursor: pointer;
+				font-weight: 600;
+				transition: opacity 0.15s;
+			}
+			button:disabled {
+				opacity: 0.6;
+				cursor: not-allowed;
+			}
+			.btn-primary {
+				background: #f6821f;
+				color: #fff;
+			}
+			.btn-primary:hover:not(:disabled) {
+				background: #e0740f;
+			}
+			.btn-secondary {
+				background: #eee;
+				color: #333;
+			}
+			.btn-secondary:hover:not(:disabled) {
+				background: #ddd;
+			}
+			#result-card {
+				display: none;
+				border-left: 4px solid #f6821f;
+			}
+			.result-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 0.5rem 1.5rem;
+				font-size: 0.9rem;
+			}
+			.result-grid dt {
+				color: #888;
+				font-size: 0.8rem;
+				text-transform: uppercase;
+				letter-spacing: 0.03em;
+			}
+			.result-grid dd {
+				font-weight: 600;
+				margin-bottom: 0.25rem;
+			}
+			.result-summary {
+				margin-top: 0.5rem;
+				padding-top: 0.5rem;
+				border-top: 1px solid #eee;
+				font-style: italic;
+				color: #555;
+				font-size: 0.9rem;
+			}
+			#summary-area {
+				display: none;
+			}
+			.stats-row {
+				display: flex;
+				gap: 1rem;
+				flex-wrap: wrap;
+				margin-bottom: 1rem;
+			}
+			.stat {
+				background: #f9f9f9;
+				border-radius: 6px;
+				padding: 0.5rem 0.75rem;
+				font-size: 0.85rem;
+			}
+			.stat strong {
+				display: block;
+				font-size: 1.25rem;
+			}
+			.chart-bar-wrap {
+				margin-bottom: 1rem;
+			}
+			.chart-row {
+				display: flex;
+				align-items: center;
+				margin-bottom: 0.35rem;
+				font-size: 0.85rem;
+			}
+			.chart-label {
+				width: 120px;
+				text-align: right;
+				padding-right: 0.5rem;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			.chart-bar {
+				height: 20px;
+				background: #f6821f;
+				border-radius: 3px;
+				min-width: 4px;
+				transition: width 0.3s;
+			}
+			.chart-count {
+				margin-left: 0.4rem;
+				color: #888;
+			}
+			.feedback-list {
+				display: flex;
+				flex-direction: column;
+				gap: 0.75rem;
+			}
+			.fb-card {
+				border-left: 4px solid #ccc;
+				border-radius: 6px;
+				background: #fafafa;
+				padding: 0.75rem 1rem;
+			}
+			.fb-card.positive {
+				border-left-color: #22c55e;
+			}
+			.fb-card.negative {
+				border-left-color: #ef4444;
+			}
+			.fb-card.neutral {
+				border-left-color: #aaa;
+			}
+			.fb-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4rem;
+				margin-bottom: 0.35rem;
+				align-items: center;
+			}
+			.badge {
+				display: inline-block;
+				font-size: 0.7rem;
+				padding: 0.1rem 0.45rem;
+				border-radius: 999px;
+				font-weight: 600;
+				text-transform: uppercase;
+			}
+			.badge-importance {
+				background: #f6821f;
+				color: #fff;
+			}
+			.badge-theme {
+				background: #e8e8e8;
+				color: #444;
+			}
+			.badge-urgency-high {
+				background: #fecaca;
+				color: #991b1b;
+			}
+			.badge-urgency-medium {
+				background: #fef3c7;
+				color: #92400e;
+			}
+			.badge-urgency-low {
+				background: #d1fae5;
+				color: #065f46;
+			}
+			.fb-text {
+				font-size: 0.9rem;
+				margin-bottom: 0.25rem;
+			}
+			.fb-summary {
+				font-size: 0.8rem;
+				color: #666;
+				font-style: italic;
+			}
+			footer {
+				text-align: center;
+				padding: 2rem 1rem;
+				color: #999;
+				font-size: 0.8rem;
+			}
+			.spinner {
+				display: inline-block;
+				width: 14px;
+				height: 14px;
+				border: 2px solid #fff;
+				border-top-color: transparent;
+				border-radius: 50%;
+				animation: spin 0.6s linear infinite;
+				vertical-align: middle;
+				margin-right: 0.3rem;
+			}
+			@keyframes spin {
+				to {
+					transform: rotate(360deg);
+				}
+			}
+		</style>
 	</head>
 	<body>
-		<h1>Feedback Intelligence</h1>
-		<p id="status">Loading...</p>
-		<table border="1" cellpadding="6" id="table" style="display:none; border-collapse:collapse;">
-			<thead>
-				<tr>
-					<th>Score</th>
-					<th>Text</th>
-					<th>Theme</th>
-					<th>Sentiment</th>
-					<th>Urgency</th>
-					<th>Source</th>
-				</tr>
-			</thead>
-			<tbody id="tbody"></tbody>
-		</table>
-		<script>
-			fetch('/summary')
-				.then((r) => r.json())
-				.then((data) => {
-					document.getElementById('status').textContent = data.length + ' items';
-					document.getElementById('table').style.display = '';
-					document.getElementById('tbody').innerHTML = data.map((d) =>
-						`<tr>
-							<td><b>${d.importance}</b></td>
-							<td>${esc(d.text)}${d.summary ? '<br><small>' + esc(d.summary) + '</small>' : ''}</td>
-							<td>${esc(d.theme || '-')}</td>
-							<td>${esc(d.sentiment || '-')}</td>
-							<td>${esc(d.urgency || '-')}</td>
-							<td>${esc(d.source)}</td>
-						</tr>`
-					).join('');
-				})
-				.catch((e) => {
-					document.getElementById('status').textContent = 'Error: ' + e.message;
-				});
+		<div class="accent-bar"></div>
+		<header>
+			<h1>Feedback Intelligence</h1>
+			<p>AI-powered feedback classification &amp; prioritization</p>
+		</header>
 
+		<div class="container">
+			<!-- Submit Section -->
+			<div class="card">
+				<h2>Submit Feedback</h2>
+				<div class="chips" id="chips"></div>
+				<textarea id="text-input" placeholder="Paste or type feedback here..."></textarea>
+				<div class="row">
+					<select id="source-select">
+						<option value="slack">Slack</option>
+						<option value="email">Email</option>
+						<option value="support">Support</option>
+						<option value="survey">Survey</option>
+						<option value="github">GitHub</option>
+						<option value="discord">Discord</option>
+					</select>
+					<button class="btn-primary" id="submit-btn">Classify &amp; Submit</button>
+				</div>
+			</div>
+
+			<!-- Classification Result -->
+			<div class="card" id="result-card">
+				<h2>Classification Result</h2>
+				<dl class="result-grid">
+					<dt>Theme</dt>
+					<dd id="r-theme"></dd>
+					<dt>Sentiment</dt>
+					<dd id="r-sentiment"></dd>
+					<dt>Urgency</dt>
+					<dd id="r-urgency"></dd>
+					<dt>Source</dt>
+					<dd id="r-source"></dd>
+				</dl>
+				<div class="result-summary" id="r-summary"></div>
+			</div>
+
+			<!-- Summary Section -->
+			<div class="card">
+				<div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;">
+					<h2 style="margin-bottom:0;">Prioritized Summary</h2>
+					<button class="btn-secondary" id="load-btn">Load Results</button>
+				</div>
+				<div id="summary-area">
+					<div id="stats-row" class="stats-row"></div>
+					<div id="theme-chart" class="chart-bar-wrap"></div>
+					<div id="feedback-list" class="feedback-list"></div>
+				</div>
+			</div>
+		</div>
+
+		<footer>Powered by Cloudflare Workers + Workers AI + D1 + Durable Objects</footer>
+
+		<script>
+			/* --- XSS helper --- */
 			function esc(s) {
+				if (!s) return '';
 				const d = document.createElement('div');
 				d.textContent = s;
 				return d.innerHTML;
+			}
+
+			/* --- Example chips --- */
+			const examples = [
+				'The dashboard keeps crashing whenever I try to export data as CSV. This is blocking our weekly reporting.',
+				'Love the new dark mode! Makes late-night sessions much easier on the eyes.',
+				'Search is painfully slow for queries with more than 3 filters. Takes 10+ seconds.',
+				'Would be great to have a Slack integration for real-time notifications.',
+				'The onboarding flow is confusing. I had to watch a YouTube video to figure out how to invite my team.',
+				'Our API calls are getting rate-limited even though we are well below the documented thresholds.',
+				'Please add two-factor authentication. Security is a dealbreaker for our compliance team.',
+				'The mobile layout is broken on iOS Safari. Buttons overlap and text gets cut off.',
+			];
+
+			const chipsEl = document.getElementById('chips');
+			const textInput = document.getElementById('text-input');
+			examples.forEach((ex) => {
+				const chip = document.createElement('button');
+				chip.className = 'chip';
+				chip.textContent = ex.length > 50 ? ex.slice(0, 50) + '...' : ex;
+				chip.addEventListener('click', () => {
+					textInput.value = ex;
+					textInput.focus();
+				});
+				chipsEl.appendChild(chip);
+			});
+
+			/* --- Submit --- */
+			const submitBtn = document.getElementById('submit-btn');
+			const resultCard = document.getElementById('result-card');
+
+			submitBtn.addEventListener('click', async () => {
+				const text = textInput.value.trim();
+				if (!text) return;
+
+				submitBtn.disabled = true;
+				submitBtn.innerHTML = '<span class="spinner"></span>Classifying...';
+
+				try {
+					const res = await fetch('/feedback', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ text, source: document.getElementById('source-select').value }),
+					});
+					const data = await res.json();
+					if (!res.ok) throw new Error(data.error || 'Request failed');
+
+					document.getElementById('r-theme').textContent = data.theme || '-';
+					document.getElementById('r-sentiment').textContent = data.sentiment || '-';
+					document.getElementById('r-urgency').textContent = data.urgency || '-';
+					document.getElementById('r-source').textContent = data.source || '-';
+					document.getElementById('r-summary').textContent = data.summary || '';
+					resultCard.style.display = 'block';
+				} catch (e) {
+					alert('Error: ' + e.message);
+				} finally {
+					submitBtn.disabled = false;
+					submitBtn.textContent = 'Classify & Submit';
+				}
+			});
+
+			/* --- Load Summary --- */
+			const loadBtn = document.getElementById('load-btn');
+			const summaryArea = document.getElementById('summary-area');
+
+			loadBtn.addEventListener('click', async () => {
+				loadBtn.disabled = true;
+				loadBtn.textContent = 'Loading...';
+
+				try {
+					const res = await fetch('/summary');
+					const data = await res.json();
+					if (!res.ok) throw new Error(data.error || 'Request failed');
+
+					renderSummary(data);
+					summaryArea.style.display = 'block';
+				} catch (e) {
+					alert('Error: ' + e.message);
+				} finally {
+					loadBtn.disabled = false;
+					loadBtn.textContent = 'Load Results';
+				}
+			});
+
+			function renderSummary(items) {
+				/* Stats */
+				const total = items.length;
+				const pos = items.filter((i) => i.sentiment === 'positive').length;
+				const neg = items.filter((i) => i.sentiment === 'negative').length;
+				const neu = total - pos - neg;
+				document.getElementById('stats-row').innerHTML =
+					`<div class="stat"><strong>${total}</strong>Total items</div>` +
+					`<div class="stat"><strong style="color:#22c55e">${pos}</strong>Positive</div>` +
+					`<div class="stat"><strong style="color:#ef4444">${neg}</strong>Negative</div>` +
+					`<div class="stat"><strong style="color:#888">${neu}</strong>Neutral</div>`;
+
+				/* Theme chart */
+				const themes = {};
+				items.forEach((i) => {
+					if (i.theme) themes[i.theme] = (themes[i.theme] || 0) + 1;
+				});
+				const sorted = Object.entries(themes).sort((a, b) => b[1] - a[1]);
+				const maxCount = sorted.length ? sorted[0][1] : 1;
+				document.getElementById('theme-chart').innerHTML = sorted
+					.map(
+						([theme, count]) =>
+							`<div class="chart-row">` +
+							`<span class="chart-label">${esc(theme)}</span>` +
+							`<div class="chart-bar" style="width:${(count / maxCount) * 200}px"></div>` +
+							`<span class="chart-count">${count}</span>` +
+							`</div>`
+					)
+					.join('');
+
+				/* Feedback cards */
+				document.getElementById('feedback-list').innerHTML = items
+					.map(
+						(i) =>
+							`<div class="fb-card ${esc(i.sentiment || '')}">` +
+							`<div class="fb-meta">` +
+							`<span class="badge badge-importance">${i.importance}</span>` +
+							(i.theme ? `<span class="badge badge-theme">${esc(i.theme)}</span>` : '') +
+							(i.urgency ? `<span class="badge badge-urgency-${esc(i.urgency)}">${esc(i.urgency)}</span>` : '') +
+							`<span style="color:#999;font-size:0.75rem;margin-left:auto">${esc(i.source)}</span>` +
+							`</div>` +
+							`<div class="fb-text">${esc(i.text)}</div>` +
+							(i.summary ? `<div class="fb-summary">${esc(i.summary)}</div>` : '') +
+							`</div>`
+					)
+					.join('');
 			}
 		</script>
 	</body>
